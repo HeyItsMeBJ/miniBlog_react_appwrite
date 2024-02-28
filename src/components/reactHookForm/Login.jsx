@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Input, Button, Logo } from "../index";
 import { Link } from "react-router-dom";
 import auth from "../../appwrite/auth";
-import { login,logout } from "../../store/authSlice";
+import { login, logout } from "../../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import conf from "../../conf/conf";
@@ -22,13 +22,16 @@ function Signin() {
         const session = await auth.login(data);
         // console.log(session)
         if (session) {
-          await auth.currentUser().then((response) => {
-            console.log(response)
-            dispatch(login({userData:response}));
-            navigate("/all_post");
+          await auth.currentUser().then((userData) => {
+            if (userData && typeof userData !== "string") {
+              dispatch(login({ userData }));
+              navigate("/");
+            } else {
+              dispatch(logout());
+              seterror("Incorrect Credentials");
+            }
+            // console.log(userData);
           });
-         
-         
         }
       }
     } catch (error) {

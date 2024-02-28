@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { PostForm } from "../components";
 import databaseService from "../appwrite/database";
 

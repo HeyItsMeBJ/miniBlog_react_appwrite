@@ -13,13 +13,13 @@ function AllPost() {
     setuserData(userdata)
     databaseService.getPosts(userData.$id).then((allpost) => {
       if (allpost) setposts(allpost.documents);
-      console.log(allpost);
+      // console.log(allpost);
     });
   }, [userdata]);
 
   return (
     <div className="w-screen  flex flex-wrap gap-4">
-      {posts.map((post) => (
+      {posts?.map((post) => (
         <div className="w-1/5 h-44 p-2" key={post.title}>
           <Postcard
             title={post.title}

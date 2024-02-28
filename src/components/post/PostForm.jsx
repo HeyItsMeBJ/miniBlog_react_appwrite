@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import storageService from "../../appwrite/storage";
 import databaseService from "../../appwrite/database";
 function PostForm({ post }) {
+  const [url, seturl] = React.useState("");
+
   const { setValue, getValues, register, handleSubmit, watch, control } =
     useForm({
       defaultValues: {
@@ -17,7 +19,7 @@ function PostForm({ post }) {
     });
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
-console.log(userData)
+  console.log(userData);
   const submit = async (data) => {
     // for update post
     if (post) {
@@ -68,6 +70,11 @@ console.log(userData)
   }, []);
 
   useEffect(() => {
+    post
+      ? storageService
+          .previewFile(post.featuredImage)
+          .then((res) => seturl(res.href))
+      : "";
     const subscribe = watch((value, { name }) => {
       if (name === "title")
         setValue("slug", slugTransform(value.title), {
@@ -88,17 +95,19 @@ console.log(userData)
           className="mb-4"
           {...register("title", { required: true })}
         />
-        <Input
-          label="Slug :"
-          placeholder="Slug"
-          className="mb-4"
-          {...register("slug", { required: true })}
-          onInput={(e) => {
-            setValue("slug", slugTransform(e.currentTarget.value), {
-              shouldValidate: true,
-            });
-          }}
-        />
+        {!post && (
+          <Input
+            label="Slug :"
+            placeholder="Slug"
+            className="mb-4"
+            {...register("slug", { required: true })}
+            onInput={(e) => {
+              setValue("slug", slugTransform(e.currentTarget.value), {
+                shouldValidate: true,
+              });
+            }}
+          />
+        )}
         <RTE
           label="Content :"
           name="content"
@@ -116,11 +125,7 @@ console.log(userData)
         />
         {post && (
           <div className="w-full mb-4">
-            <img
-              src={appwriteService.getFilePreview(post.featuredImage)}
-              alt={post.title}
-              className="rounded-lg"
-            />
+            <img src={url} alt={post.title} className="rounded-lg" />
           </div>
         )}
         <Select
